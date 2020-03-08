@@ -21,7 +21,7 @@ HDC1000是德州仪器（TI）生产的一款集成式湿度和温度传感器�
 | **湿度**      |  0% 至 100%     |  ±3%      |
 
 ### 功耗
- - 平均电源电流（每秒测量 1 次 ）: 1.2µA @ RH（11 位）+ 温度（11 位）
+ - 平均电源电流（每秒测量 1 次 ）: **1.2µA** @ RH（11 位）+ 温度（11 位）
 
 ## 支持情况
 
@@ -84,19 +84,42 @@ int rt_hw_hdc1000_init(const char *name, struct rt_sensor_config *cfg);
 ```
 #include "sensor_ti_hdc1000.h"
 
-
-```
 int rt_hw_hdc1000_port(void)
 {
-    struct rt_sensor_config cfg;
-    rt_int8_t result;
-    cfg.intf.dev_name = "i2c1";
-    cfg.intf.user_data = (void *)HDC1000_ADDR_DEFAULT;
-    cfg.irq_pin.pin = RT_PIN_NONE;
-    result = rt_hw_hdc1000_init("hdc1000", &cfg);
-    return result;
+  struct rt_sensor_config cfg;
+  rt_int8_t result;
+  cfg.intf.dev_name = "i2c1";
+  cfg.intf.user_data = (void *)HDC1000_ADDR_DEFAULT;
+  cfg.irq_pin.pin = RT_PIN_NONE;
+  result = rt_hw_hdc1000_init("hdc1000", &cfg);
+  return result;
 }
 INIT_APP_EXPORT(rt_hw_hdc1000_port);
+
+void application_get_sensor_val(void)
+{
+  struct rt_sensor_data sensor_data;
+  rt_size_t res;
+  rt_device_t dev = RT_NULL;
+
+  dev = rt_device_find("temp_hdc1000");
+  if (rt_device_open(dev, RT_DEVICE_FLAG_RDWR) != RT_EOK)
+  {
+      LOG_E("open device failed!");
+      return;
+  }
+  res = rt_device_read(dev, 0, &sensor_data, 1);
+  if (res != 1)
+  {
+      LOG_E("read data failed!size is %d", res);
+  }
+  else
+  {
+      LOG_I("temp:%3d.%dC, timestamp:%5d", sensor_data.data.temp / 10, sensor_data.data.temp % 10, sensor_data.timestamp);  
+      LOG_I("humi:%3d.%dC, timestamp:%5d", sensor_data.data.humi / 10, sensor_data.data.humi % 10, sensor_data.timestamp);
+  }
+  rt_device_close(dev);
+}
 ```
 
 ## 注意事项
