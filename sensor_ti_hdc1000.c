@@ -33,11 +33,6 @@ static rt_size_t hdc1000_fetch_data(struct rt_sensor_device *sensor, void *buf, 
     rt_uint16_t temp_value, humi_value;
     
     hdc1000_get_temperature_and_humidity(hdc1000_dev, &temp_value, &humi_value);
-    
-    if (sensor->module)
-    {
-       // RT_SENSOR_CLASS_NONE
-    }
         
     if (sensor->info.type == RT_SENSOR_CLASS_TEMP)
     {
@@ -185,7 +180,7 @@ static int hdc1000_selftest(void)
     {
         hdc1000_get_temperature_and_humidity(hdc1000_dev, &temp_value, &humi_value);
 
-        temp_value = (int16_t)(((float)temp_value/65536*165-40));   // ¡æ
+        temp_value = (int16_t)(((float)temp_value/65536*165-40));   // C
         humi_value = (int16_t)(((float)humi_value/65536)*100);      // %RH
 
         rt_kprintf("device_id = %X, manufacturer_id = %X, temp = %d C, humi = %d%RH\r\n", device_id,manufacturer_id,temp_value,humi_value);
