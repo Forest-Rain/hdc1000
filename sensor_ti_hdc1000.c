@@ -15,7 +15,11 @@ static struct hdc1000_device *hdc1000_dev;
 
 static rt_err_t _hdc1000_init(struct rt_sensor_intf *intf)
 {
+#if defined(RTTHREAD_VERSION) && (RTTHREAD_VERSION >= RT_VERSION_CHECK(5, 0, 0))
+    rt_uint8_t  i2c_addr = (rt_uint32_t)(intf->arg) & 0xff;
+#else
     rt_uint8_t  i2c_addr = (rt_uint32_t)(intf->user_data) & 0xff;
+#endif
     
     hdc1000_dev = hdc1000_init(intf->dev_name, i2c_addr);
    

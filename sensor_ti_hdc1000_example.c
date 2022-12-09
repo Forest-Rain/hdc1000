@@ -10,7 +10,11 @@ int rt_hw_hdc1000_port(void)
     struct rt_sensor_config cfg;
     rt_int8_t result;
     cfg.intf.dev_name = "i2c1";
+#if defined(RTTHREAD_VERSION) && (RTTHREAD_VERSION >= RT_VERSION_CHECK(5, 0, 0))
+    cfg.intf.arg = (void *)HDC1000_SLAVE_ADDR_DEFAULT;
+#else
     cfg.intf.user_data = (void *)HDC1000_SLAVE_ADDR_DEFAULT;
+#endif
     cfg.irq_pin.pin = RT_PIN_NONE;
 
     result = rt_hw_hdc1000_init("hdc1000", &cfg);
